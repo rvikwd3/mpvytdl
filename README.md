@@ -1,6 +1,6 @@
 # mpvytdl
 
- Script to find the youtube-dl format number from the youtube video link provided
+ Script to call mpv without using specifying video/audio format codes
 
 ### Options
 ```	-v --video	Video quality eg. 144p, 720p, best
