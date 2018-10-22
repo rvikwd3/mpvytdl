@@ -259,7 +259,7 @@ if [[ "$VIDEO" -eq "best" ]]; then
 	echo "[VIDEO] BEST"
 	# compare video qualities
 
-	best_video()
+	best_video
 	echo "[VIDEO] " $VIDEO
 fi
 
@@ -267,7 +267,7 @@ if [[ "$AUDIO" -eq "best" ]]; then
 	echo "[AUDIO] BEST"
 	# compare audio qualities
 
-	best_audio()
+	best_audio
 	echo "[AUDIO] " $AUDIO
 
 fi	#}}}
