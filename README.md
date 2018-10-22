@@ -24,7 +24,8 @@
 
 ### Examples
 
-```	$ mpvur 1080p m4a https://www.youtube.com/watch?v=3urOzCclGhc
+```
+	$ mpvur 1080p m4a https://www.youtube.com/watch?v=3urOzCclGhc
 	$ mpvur -v 480p -a best -u https://www.youtube.com/watch?v=3urOzCclGhc
 	$ mpvur -v 720p -a m4a -u https://www.youtube.com/watch?v=3urOzCclGhc
 ```
