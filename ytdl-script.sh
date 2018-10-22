@@ -208,8 +208,50 @@ fi
 
 # Find format index from ytdl -F
 # ------------------------------
-VIDEO_FORMAT="$(grep -E $VIDEO < $ytdl_tmpfile | head -n 1 | awk '{ print $1 }')"
-echo "Video format = $VIDEO_FORMAT"
+if [[ "$VIDEO" -eq "best" ]]
+then
+	echo "[VIDEO] BEST"
+	# compare video qualities
+else
+	VIDEO_FORMAT="$(grep -E video < $ytdl_tmpfile | grep -E $VIDEO | head -n 1 | awk '{ print $1 }')"
+	echo "Video format = $VIDEO_FORMAT"
+fi
+
+if [[ "$AUDIO" -eq "best" ]]
+then
+	echo "[AUDIO] BEST"
+	bitrate=($(grep -E audio < $ytdl_tmpfile | grep -Eo '@[0-9]{2,3}k|@ [0-9]{2,3}k' | sed 's/[^0-9k]//g' ))
+
+	# print bitrates before sorting
+	echo "[AUDIO] Before sort"
+#	for i in "${bitrate[@]}"
+#	do
+#		printf "[BITRATE - $i] ${bitrate[$i]}"
+#		echo "[AUDIO] bitrate - " $i
+#	done
+
+	# sort audio bitrates
+	echo "[AUDIO] Sort bitrates"
+	bitrate_sorted=( $(
+		for i in "${bitrate[@]}"
+		do
+			echo "$i" | sed "s/k//"
+		done | sort -gr) )
+
+	# print bitrates after sorting
+	echo "[AUDIO] After sort"
+	for i in "${bitrate_sorted[@]}"
+	do
+		echo $i
+	done
+
+	AUDIO=${bitrate_sorted[0]}
+	echo "[AUDIO] " $AUDIO
+
+fi
+
+AUDIO_FORMAT="$(grep -E audio < $ytdl_tmpfile | grep -E $AUDIO"k" | head -n 1 | awk '{ print $1 }')"
+echo "Audio format = $AUDIO_FORMAT"
 
 
 rm "$ytdl_tmpfile"
