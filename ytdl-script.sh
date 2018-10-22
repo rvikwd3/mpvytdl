@@ -12,18 +12,20 @@
 ##	TODO
 ##		1.	Extract 'youtube-dl -F' format
 ##		2.	Put automatic arguments for Audio, Video and URL
-##		3.	Ensure video, audio correct input (480p/480, m4a/webm)
+##		3.	[✓] Ensure video, audio correct input (480p/480, m4a/webm)
 ##		4.	Call mpv with format options
 ##		5.	Call 'mpv --ytdl-format=video+audio'
 ##		6.	Include video container format
-##		7.	Parameterize "best" functions
+##		7.	[✓] "best" quality functions
+##		8.	Populate -h Help
+##		9.	Usage text
 ##
 ######################################################################################
 
 # NEW GETOPT									 {{{
 # ----------
-OPTIONS=v:a:u:h		# -v video -a audio -u URL -h help
-LONGOPTIONS=video:,audio:,url:,help
+OPTIONS=v:a:u:hp:		# -v video -a audio -u URL -h help -p profile
+LONGOPTIONS=video:,audio:,url:,help,profile:	# --video --audio --url --help --profile
 
 ! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTIONS --name "$0" -- "$@")
 if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
@@ -35,7 +37,7 @@ eval set -- "$PARSED"
 
 HELP=false
 
-while true; do
+while true; do								#{{{
 	case "$1" in
 		--video | -v)
 			case "$2" in
@@ -71,17 +73,29 @@ while true; do
 			echo "Help!"
 			shift
 			exit 0
-			;;
+		;;
+		--profile | -p)
+			echo "[ARGS] Profile"
+			case "$2" in
+				"")	echo "[$1] Need an argument!"
+					shift 2
+				;;
+				*)	PROFILE=$2;
+					shift 2
+				;;
+			esac
+		;;
 		--)
 			shift
 			break
-			;;
+		;;
 		*)
 			echo "Internal error!	ERROR_FLAG_CASE *"
 			exit 1
-			;;
+		;;
 	esac
 done	#}}}
+#}}}
 
 # Functions
 # ---------
@@ -106,7 +120,7 @@ best_video(){									#{{{
 
 	for i in "${bitrate[@]}"
 	do
-		printf "[BITRATE - $i] ${bitrate[$i]}"
+		#printf "[BITRATE - $i] ${bitrate[$i]}"
 		echo "[VIDEO] bitrate - " $i
 	done
 
@@ -223,7 +237,16 @@ do
 		echo "Not a valid VIDEO resolution"
 		unset VIDEO
 	fi
-done	#}}}
+done
+
+# if quality is best, find the best bitrate
+if [[ "$VIDEO" -eq "best" ]]; then
+	echo "[VIDEO] BEST"
+	# compare video qualities
+	best_video
+
+	echo "[VIDEO] " $VIDEO
+fi #}}}
 
 >&2 echo "[DEBUG] Video resolution set"
 
@@ -246,7 +269,18 @@ if [[ -z ${AUDIO+x} ]]; then					#{{{
 	done < $ytdl_tmpfile
 
 	read -p "Enter audio quality:	" AUDIO
+	AUDIO=$(echo $AUDIO | sed 's/k//g')
 	echo "AUDIO:	$AUDIO"
+fi
+
+# if quality is best, find the best bitrate
+if [[ "$AUDIO" -eq "best" ]]; then
+	echo "[AUDIO] BEST"
+	# compare audio qualities
+	best_audio
+
+	echo "[AUDIO] " $AUDIO
+
 fi	#}}}
 
 >&2 echo "[DEBUG] Audio resolution set"
@@ -254,32 +288,23 @@ fi	#}}}
 # Find format index from ytdl -F
 # ------------------------------
 
-# if quality is best, find the best bitrate	#{{{
-if [[ "$VIDEO" -eq "best" ]]; then
-	echo "[VIDEO] BEST"
-	# compare video qualities
-
-	best_video
-	echo "[VIDEO] " $VIDEO
-fi
-
-if [[ "$AUDIO" -eq "best" ]]; then
-	echo "[AUDIO] BEST"
-	# compare audio qualities
-
-	best_audio
-	echo "[AUDIO] " $AUDIO
-
-fi	#}}}
-
->&2 echo "[DEBUG] Past best bitrate"
-
 AUDIO_FORMAT="$(grep -E audio < $ytdl_tmpfile | grep -E $AUDIO"k" | head -n 1 | awk '{ print $1 }')"
 echo "Audio format = $AUDIO_FORMAT"
 
 VIDEO_FORMAT="$(grep -E video < $ytdl_tmpfile | grep -E $VIDEO | head -n 1 | awk '{ print $1 }')"
 echo "Video format = $VIDEO_FORMAT"
 
+# At this point we have the
+#	URL
+#	Video Format Code
+#	Audio Format Code
+# We can call mpv with the ytdl-format flag
+
+if [[ -z ${PROFILE+x} ]]; then
+	mpv "$URL" --ytdl-format=$VIDEO_FORMAT+$AUDIO_FORMAT
+else
+	mpv "$URL" --profile=$PROFILE --ytdl-format=$VIDEO_FORMAT+$AUDIO_FORMAT
+fi
 
 rm "$ytdl_tmpfile"
 
