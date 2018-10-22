@@ -11,16 +11,16 @@
 ```
 
 ### TODO
-	1.	Extract 'youtube-dl -F' format
-	2.	Put automatic arguments for Audio, Video and URL
-	3.	[✓] Ensure video, audio correct input (480p/480, m4a/webm)
-	4.	Call mpv with format options
-	5.	Call 'mpv --ytdl-format=video+audio'
-	6.	Include video container format
-	7.	[✓] "best" quality functions
-	8.	Populate -h Help
-	9.	Usage text
-	10.	60fps quality support
+1.	Extract 'youtube-dl -F' format
+2.	Put automatic arguments for Audio, Video and URL
+3.	[✓] Ensure video, audio correct input (480p/480, m4a/webm)
+4.	Call mpv with format options
+5.	Call 'mpv --ytdl-format=video+audio'
+6.	Include video container format
+7.	[✓] "best" quality functions
+8.	Populate -h Help
+9.	Usage text
+10.	60fps quality support
 
 ### Examples
 
