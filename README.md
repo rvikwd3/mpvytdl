@@ -3,11 +3,11 @@
  Script to find the youtube-dl format number from the youtube video link provided
 
 ### Options
-```	-v	--video	Video quality eg. 144p, 720p, best
-	-a	--audio	Audio quality eg. 128k, 160k, best
-	-u	--url	URL of youtube video to play
-	-p	--profile	mpv profile to use
-	-h	--help	Show help
+```	-v --video	Video quality eg. 144p, 720p, best
+	-a --audio	Audio quality eg. 128k, 160k, best
+	-u --url	URL of youtube video to play
+	-p --profile	mpv profile to use
+	-h --help	Show help
 ```
 
 ### TODO
